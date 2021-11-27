@@ -3,48 +3,26 @@
 #include"fun.h"
 #include<fstream>
 
+#include "test_task.h"
+#include "main_task.h"
+#include "system_task.h"
 
 //данные предоставляют сплошной массив, поэтому для удобства я сделал набор типо понятных символов
 //например чтобы обратиться к v1 элементу массива(по сути 2-й по счету) надо написать perem[__v1]
 //																что равносильно perem[1]						
 enum { __x, __v1, __v2, __s, __h1, __h2, __h3, __u, __E, __c1, __c2 };
 enum { __x0, __u0, __h0, __a1, __a3, __m, __e, __max_step, __gran, __toch };
-enum { _xu, __contr_e };
+enum { _xu, __contr_e, __method };
+
+// method 0 - тестовая задача
+// method 1 - задача 1
+// method 2 - система
 
 #define EPS 0.01
 #define P 3
 #define P_SIZE 11
 
-
-
-// j здесь для сдвига массива по __h, опять же для памяти и быстродействия
-double st_RK_1(double* perem, double* start_p, double* k, int j)
-{
-	//_h = h / 2;
-	perem[__h2 + j] = perem[__h1 + j] / 2;
-	//k[0] = f(x[0], v1[0]);
-	k[0] = f(perem[__x], perem[__v1], start_p[__a1], start_p[__a3], start_p[__m]);
-	//k[1] = f(h / 2 + x[0], _h[0] *k[0] + v1);
-	k[1] = f(perem[__h1 + j] / 2 + perem[__x], perem[__h2 + j] * k[0] + perem[__v1], start_p[__a1], start_p[__a3], start_p[__m]);
-	//k[2] = f(x + h, (-k + 2 * k)*h + v1);
-	k[2] = f(perem[__x] + perem[__h1 + j], (-k[0] + 2 * k[1]) * perem[__h1 + j] + perem[__v1], start_p[__a1], start_p[__a3], start_p[__m]);
-
-	if (j)
-	{
-		double tmp = (k[0] + 4 * k[1] + k[2]) / 6 * perem[__h1 + j] + perem[__v1];
-
-		k[0] = f(perem[__x], perem[__v1], start_p[__a1], start_p[__a3], start_p[__m]);
-		//k[1] = f(h / 2 + x[0], _h[0] *k[0] + v1);
-		k[1] = f(perem[__h1 + j] / 2 + perem[__x], perem[__h2 + j] * k[0] + perem[__v1], start_p[__a1], start_p[__a3], start_p[__m]);
-		//k[2] = f(x + h, (-k + 2 * k)*h + v1);
-		k[2] = f(perem[__x] + perem[__h1 + j], (-k[0] + 2 * k[1]) * perem[__h1 + j] + perem[__v1], start_p[__a1], start_p[__a3], start_p[__m]);
-	}
-
-	//return (k[0] + 4 * k[1] + k[2]) / 6 *(*h) + (*v1);
-	return (k[0] + 4 * k[1] + k[2]) / 6 * perem[__h1 + j] + perem[__v1];
-}
-
-double st_RK(double (*f)(double, double, double, double, double), double x, double v, double h, double* start_p, double* k)
+double st_RK3(double (*f)(double, double, double, double, double), double x, double v, double h, double* start_p, double* k)
 {
 	k[0] = f(x, v, start_p[__a1], start_p[__a3], start_p[__m]);
 	k[1] = f(x + h / 2, v + h * k[0] / 2, start_p[__a1], start_p[__a3], start_p[__m]);
@@ -66,6 +44,24 @@ double st_true_sol_ex_9(double* perem, double* start_p)
 
 
 int m_RK3_1_r(double* start_p, int* gran, char* name_txt, double** py)
+{
+	int size = 0;
+	if (gran[__method] == 0)
+	{
+		size = test_task(start_p, gran, name_txt, py);
+	}
+	else if (gran[__method] == 1)
+	{
+		size = main_task(start_p, gran, name_txt, py);
+	}
+	else
+	{
+		size = systen_task(start_p, gran, name_txt, py);
+	}
+	return size;
+}
+
+/*
 {
 	double v_temp = 0.0;
 	double v2 = 0.0;
@@ -250,3 +246,4 @@ int m_RK3_1_r(double* start_p, int* gran, char* name_txt, double** py)
 	//возвращаем размер массива 
 	return size;
 }
+*/

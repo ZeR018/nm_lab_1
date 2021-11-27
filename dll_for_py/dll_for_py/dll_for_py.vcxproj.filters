@@ -30,6 +30,15 @@
     <ClInclude Include="fun.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="test_task.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="main_task.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="system_task.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -42,6 +51,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="m_RK3_1.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="test_task.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="main_task.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="system_task.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

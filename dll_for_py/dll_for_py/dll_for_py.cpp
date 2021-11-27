@@ -15,7 +15,7 @@ using namespace std;
 
 extern "C" __declspec(dllexport) void __stdcall work_RK31R(double** data, double * start, int * gran, int* _i)
 {
-
+	std::cout << *_i << std::endl;
 	*_i = m_RK3_1_r(start, gran, "test2.txt", data);
 
 }

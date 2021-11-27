@@ -146,9 +146,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="fun.h" />
+    <ClInclude Include="main_task.h" />
     <ClInclude Include="m_RK3_1.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="system_task.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="test_task.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -166,6 +169,7 @@
       </PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="dll_for_py.cpp" />
+    <ClCompile Include="main_task.cpp" />
     <ClCompile Include="m_RK3_1.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -173,6 +177,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="system_task.cpp" />
+    <ClCompile Include="test_task.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

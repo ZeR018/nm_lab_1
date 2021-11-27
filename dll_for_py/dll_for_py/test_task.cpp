@@ -1,6 +1,7 @@
 #include "test_task.h"
 #include<fstream>
 #include <vector>
+#include "stdafx.h"
 
 using namespace std;
 
@@ -16,6 +17,7 @@ double f(double v)
 struct perem {
 	double x;
 	double v;
+	double v2;
 	double s;
 	double h;
 	double u;
@@ -29,6 +31,7 @@ int test_task(double* start_p, int* gran, char* name_txt, double** py)
 	perem p;
 	p.x = start_p[__x0];
 	p.v = start_p[__u0];
+	p.v2 = 0.0;
 	p.s = 0.0;
 	p.h = start_p[__h0];
 	p.u = start_p[__u0];
@@ -38,7 +41,14 @@ int test_task(double* start_p, int* gran, char* name_txt, double** py)
 
 	double* k = new double[4];
 
-	vector<double> d_v;
+	/*vector<double> d_v;
 
+	d_v.push_back(p.x);
+	d_v.push_back(p.v);
+	d_v.push_back(p.s);
+	d_v.push_back(0.0);
+	d_v.push_back(p.x);
+	d_v.push_back(p.x);*/
 
+	return 0;
 }
