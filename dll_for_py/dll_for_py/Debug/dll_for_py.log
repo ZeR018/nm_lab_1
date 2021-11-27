@@ -1,0 +1,6 @@
+﻿  stdafx.cpp
+  dllmain.cpp
+  dll_for_py.cpp
+     Creating library C:\work\cpp_python\git\RungeKutta\dll_for_py\Debug\dll_for_py.lib and object C:\work\cpp_python\git\RungeKutta\dll_for_py\Debug\dll_for_py.exp
+  dll_for_py.vcxproj -> C:\work\cpp_python\git\RungeKutta\dll_for_py\Debug\dll_for_py.dll
+  dll_for_py.vcxproj -> C:\work\cpp_python\git\RungeKutta\dll_for_py\Debug\dll_for_py.pdb (Full PDB)
