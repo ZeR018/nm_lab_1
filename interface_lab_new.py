@@ -16,7 +16,7 @@ class Interface:
         self.master = master  # инициализируем основное окно
         self.photo = tk.PhotoImage(file='logo.png')  # загрузка иконки приложения
         master.iconphoto(False, self.photo)  # установка иконки
-        master.title('Задача 9. Задача Коши для ОДУ выполнил Варварин Евгений, группа 381903_2')  # заголовок
+        master.title('Лабораторная работа №1 Численное решение задачи Коши для ОДУ группа 381903_2')  # заголовок
         master.configure(bg='#ececec')  # фон
         master.minsize(1530, 670)  # минимальный размер окна
 
@@ -32,9 +32,6 @@ class Interface:
         self.cb_var.set(1)  # значение по умолчанию
 
         self.create_widgets()  # создание виджетов
-
-    def test_combobox(self):
-        print(self.task_c.get())
 
     def create_widgets(self):
 
@@ -61,7 +58,7 @@ class Interface:
 
         self.clear_b = tk.Button(text='Очистить график', bg='#ececec', highlightbackground='#ececec', command=self.cleanPlot, width = 15)
 
-        method_b = tk.Button(text='Метод', bg='#ececec', highlightbackground='#ececec', command=self.test_combobox, width = 15).grid(
+        method_b = tk.Button(text='Метод', bg='#ececec', highlightbackground='#ececec', command=self.method, width = 15).grid(
             row=5, column=6,padx=(10,10), pady=(10, 10), sticky='we')
 
         task_b = tk.Button(text='Задача', bg='#ececec', highlightbackground='#ececec', command=self.task_window, width = 15).grid(
@@ -102,48 +99,46 @@ class Interface:
         # справка
         reference_l = tk.Label(text='Справка', bg='#ececec', font='Helvetica 10 bold').grid(row=0, column=7, pady=10,
                                                                                             padx=10, sticky='we')
-        self.reference_t = tk.Text(height=10, width=110, highlightbackground='#cbcbcb')
+        self.reference_t = tk.Text(height=10, width=70, highlightbackground='#cbcbcb')
         self.reference_t.grid(row=1, column=7, rowspan=6, padx=(10, 10),
                               sticky='we')
 
         # таблица
+    def table(self, p, _i, d):
+       if (self.task_c.get()=='Тестовая'):
+           heads = ['i', 'xi', 'Vi', 'V2i', 'Vi-V2i', 'ОЛП', 'hi',  'C1', 'C2', 'E', 'Ui']
+       else:
+           heads = ['i', 'xi', 'Vi', 'V2i', 'Vi-V2i', 'ОЛП', 'hi',  'C1', 'C2']
+       self.table = ttk.Treeview(self.master, show='headings')
+       self.table['columns'] = heads
+       self.table.grid(row=9, column=5, columnspan=3, rowspan=3, padx=(10, 0), sticky=tk.NSEW)
+       for header in heads:
+           self.table.heading(header, text=header, anchor='center')
+           self.table.column(header, anchor='center')
+           self.table.column(header, width=70)
+       _s = 0
+       for z in range(int(_i.value / p['k'])):
+           if d[p['e'] + z * p['k']] == 0:
+               if z != 0:
+                   _s = "<1e-16"
+           else:
+               _s = d[p['e'] + z * p['k']]
+           self.table.insert('', tk.END, values=(
+           z, round((d[p['x'] + z * p['k']]), 4), (d[p['V'] + z * p['k']]), (d[p['V2'] + z * p['k']]) ,  _s,
+           d[p['h'] + z * p['k']], d[p['U'] + z * p['k']], d[p['E'] + z * p['k']], int(d[p['c1'] + z * p['k']]),
+           int(d[p['c2'] + z * p['k']]))) #Переделать, когда будет код
+       scroll_bar1 = Scrollbar(self.master, orient=VERTICAL, command=self.table.yview)
+       scroll_bar1.grid(row=9, column=9, padx=10, sticky=tk.NSEW)
+       self.table.configure(yscroll=scroll_bar1.set)
 
-    def tables(self, p, _i, d):
-        heads = ['k', 'x', 'V', 'V2', 'ОЛП', 'h', 'U', 'E', 'C1', 'C2']
-        self.table = ttk.Treeview(self.master, show='headings')
-        self.table['columns'] = heads
-        self.table.grid(row=9, column=5, columnspan=4, rowspan=10, padx=(10, 0), sticky=tk.NSEW)
-        for header in heads:
-            self.table.heading(header, text=header, anchor='center')
-            self.table.column(header, anchor='center')
-            self.table.column(header, width=8)
-        self.table.column('ОЛП', width=100)
-        self.table.column('V', width=100)
-        self.table.column('E', width=100)
-
-        _s = 0
-        for z in range(int(_i.value / p['k'])):
-            if d[p['e'] + z * p['k']] == 0:
-                if z != 0:
-                    _s = "<1e-16"
-            else:
-                _s = d[p['e'] + z * p['k']]
-            self.table.insert('', tk.END, values=(
-            z, round((d[p['x'] + z * p['k']]), 4), (d[p['V'] + z * p['k']]), (d[p['V2'] + z * p['k']]) ,  _s,
-            d[p['h'] + z * p['k']], d[p['U'] + z * p['k']], d[p['E'] + z * p['k']], int(d[p['c1'] + z * p['k']]),
-            int(d[p['c2'] + z * p['k']])))
-        scroll_bar1 = Scrollbar(self.master, orient=VERTICAL, command=self.table.yview)
-        scroll_bar1.grid(row=9, column=9, padx=10, sticky=tk.NSEW)
-        self.table.configure(yscroll=scroll_bar1.set)
 
         # график
-
     def plotOnPlane(self, X, Y):
         f = plt.figure(num=2, figsize=(7, 5), dpi=80, facecolor='#ececec')
         fig = plt.subplot(1, 1, 1)
-        fig.set_title('График зависимости скорости U от времени x')
-        fig.set_xlabel('x, сек.')
-        fig.set_ylabel('U(x), м/сек.')
+        fig.set_title('График точного решения')
+        fig.set_xlabel('x')
+        fig.set_ylabel('U(x)')
         fig.plot(X, Y, '-k')
         return f
 
@@ -151,14 +146,14 @@ class Interface:
         plt.cla()
         f = plt.figure(num=2, figsize=(7, 5), dpi=80, facecolor='#ececec')
         fig = plt.subplot(1, 1, 1)
-        fig.set_title('График зависимости скорости U от времени x')
-        fig.set_xlabel('x, сек.')
-        fig.set_ylabel('U(x), м/сек.')
+        fig.set_title('График точного решения')
+        fig.set_xlabel('x')
+        fig.set_ylabel('U(x)')
         self.canvas.draw()
 
     def create_form_graph(self, figure):
         self.canvas = FigureCanvasTkAgg(figure, self.master)
-        self.canvas.get_tk_widget().grid(row=9, column=1, columnspan=4, rowspan=1)
+        self.canvas.get_tk_widget().grid(row=9, column=0, columnspan=4, rowspan=1)
         self.canvas.draw()
 
     # справка
@@ -174,7 +169,7 @@ class Interface:
         max_olp = 0
         max_olp_x = 0
         result_x = self.x0.get()
-        result_v = self.u0.get()
+        result_v = 0
         max_error_point = self.x0.get()
         for z in range(1, int(_i.value / p['k'])):
             if d[p['e'] + z * p['k']] > max_olp:
@@ -229,11 +224,11 @@ class Interface:
         # записываем начальные условия задачи
         init_params = (c_double * 10)()
         init_params[0] = self.x0.get()
-        init_params[1] = self.u0.get()
+        init_params[1] = 0
         init_params[2] = self.step.get()
-        init_params[3] = self.a1.get()
-        init_params[4] = self.a3.get()
-        init_params[5] = self.m.get()
+        #init_params[3] = self.a1.get()
+        #init_params[4] = self.a3.get()
+        #init_params[5] = self.m.get()
         init_params[6] = self.error.get()
         init_params[7] = self.max_step.get()
         init_params[8] = self.border.get()  # точность выхода на границу
@@ -292,7 +287,7 @@ class Interface:
         self.figure = self.plotOnPlane(X, Y)
         self.create_form_graph(self.figure)  # график
 
-        self.tables(p, _i, d)  # таблица
+        self.table(p, _i, d)  # таблица
         self.reference(p, _i, d)
 
         # удаляем память
