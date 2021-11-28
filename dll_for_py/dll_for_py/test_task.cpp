@@ -1,5 +1,6 @@
 #include "test_task.h"
 #include<fstream>
+#include "stdafx.h"
 #include <vector>
 
 using namespace std;
@@ -38,7 +39,7 @@ int test_task(double* start_p, int* gran, char* name_txt, double** py)
 
 	double* k = new double[4];
 
-	vector<double> d_v;
+	std::vector<double> d_v;
 
-
+	d_v.push_back(1.0);
 }

@@ -1,0 +1,50 @@
+﻿  main_task.cpp
+C:\work\cpp_python\git\nm_lab_1\dll_for_py2\dll_for_py2\main_task.cpp(48,2): error C2065: vector: необъявленный идентификатор
+C:\work\cpp_python\git\nm_lab_1\dll_for_py2\dll_for_py2\main_task.cpp(48,9): error C2062: тип "double" не требуется
+C:\work\cpp_python\git\nm_lab_1\dll_for_py2\dll_for_py2\main_task.cpp(50,2): error C2065: d_v: необъявленный идентификатор
+C:\work\cpp_python\git\nm_lab_1\dll_for_py2\dll_for_py2\main_task.cpp(51,2): error C2065: d_v: необъявленный идентификатор
+C:\work\cpp_python\git\nm_lab_1\dll_for_py2\dll_for_py2\main_task.cpp(52,2): error C2065: d_v: необъявленный идентификатор
+C:\work\cpp_python\git\nm_lab_1\dll_for_py2\dll_for_py2\main_task.cpp(53,2): error C2065: d_v: необъявленный идентификатор
+C:\work\cpp_python\git\nm_lab_1\dll_for_py2\dll_for_py2\main_task.cpp(54,2): error C2065: d_v: необъявленный идентификатор
+C:\work\cpp_python\git\nm_lab_1\dll_for_py2\dll_for_py2\main_task.cpp(55,2): error C2065: d_v: необъявленный идентификатор
+C:\work\cpp_python\git\nm_lab_1\dll_for_py2\dll_for_py2\main_task.cpp(56,2): error C2065: d_v: необъявленный идентификатор
+C:\work\cpp_python\git\nm_lab_1\dll_for_py2\dll_for_py2\main_task.cpp(66,2): error C2065: string: необъявленный идентификатор
+C:\work\cpp_python\git\nm_lab_1\dll_for_py2\dll_for_py2\main_task.cpp(66,9): error C2146: синтаксическая ошибка: отсутствие ";" перед идентификатором "name"
+C:\work\cpp_python\git\nm_lab_1\dll_for_py2\dll_for_py2\main_task.cpp(66,9): error C2065: name: необъявленный идентификатор
+C:\work\cpp_python\git\nm_lab_1\dll_for_py2\dll_for_py2\main_task.cpp(66,16): error C3861: string: идентификатор не найден
+C:\work\cpp_python\git\nm_lab_1\dll_for_py2\dll_for_py2\main_task.cpp(67,2): error C2065: ofstream: необъявленный идентификатор
+C:\work\cpp_python\git\nm_lab_1\dll_for_py2\dll_for_py2\main_task.cpp(67,11): error C2146: синтаксическая ошибка: отсутствие ";" перед идентификатором "_f"
+C:\work\cpp_python\git\nm_lab_1\dll_for_py2\dll_for_py2\main_task.cpp(67,14): error C2065: name: необъявленный идентификатор
+C:\work\cpp_python\git\nm_lab_1\dll_for_py2\dll_for_py2\main_task.cpp(67,11): error C3861: _f: идентификатор не найден
+C:\work\cpp_python\git\nm_lab_1\dll_for_py2\dll_for_py2\main_task.cpp(110,18): error C2065: f: необъявленный идентификатор
+C:\work\cpp_python\git\nm_lab_1\dll_for_py2\dll_for_py2\main_task.cpp(112,14): error C2065: f: необъявленный идентификатор
+C:\work\cpp_python\git\nm_lab_1\dll_for_py2\dll_for_py2\main_task.cpp(113,14): error C2065: f: необъявленный идентификатор
+C:\work\cpp_python\git\nm_lab_1\dll_for_py2\dll_for_py2\main_task.cpp(135,34): error C3861: pow: идентификатор не найден
+C:\work\cpp_python\git\nm_lab_1\dll_for_py2\dll_for_py2\main_task.cpp(135,12): error C3861: fabs: идентификатор не найден
+C:\work\cpp_python\git\nm_lab_1\dll_for_py2\dll_for_py2\main_task.cpp(152,33): error C3861: pow: идентификатор не найден
+C:\work\cpp_python\git\nm_lab_1\dll_for_py2\dll_for_py2\main_task.cpp(167,18): error C3861: pow: идентификатор не найден
+C:\work\cpp_python\git\nm_lab_1\dll_for_py2\dll_for_py2\main_task.cpp(172,3): error C2065: d_v: необъявленный идентификатор
+C:\work\cpp_python\git\nm_lab_1\dll_for_py2\dll_for_py2\main_task.cpp(173,3): error C2065: d_v: необъявленный идентификатор
+C:\work\cpp_python\git\nm_lab_1\dll_for_py2\dll_for_py2\main_task.cpp(174,3): error C2065: d_v: необъявленный идентификатор
+C:\work\cpp_python\git\nm_lab_1\dll_for_py2\dll_for_py2\main_task.cpp(175,3): error C2065: d_v: необъявленный идентификатор
+C:\work\cpp_python\git\nm_lab_1\dll_for_py2\dll_for_py2\main_task.cpp(176,3): error C2065: d_v: необъявленный идентификатор
+C:\work\cpp_python\git\nm_lab_1\dll_for_py2\dll_for_py2\main_task.cpp(177,3): error C2065: d_v: необъявленный идентификатор
+C:\work\cpp_python\git\nm_lab_1\dll_for_py2\dll_for_py2\main_task.cpp(178,3): error C2065: d_v: необъявленный идентификатор
+C:\work\cpp_python\git\nm_lab_1\dll_for_py2\dll_for_py2\main_task.cpp(188,19): error C2065: d_v: необъявленный идентификатор
+C:\work\cpp_python\git\nm_lab_1\dll_for_py2\dll_for_py2\main_task.cpp(188,30): error C3078: размер массива должен быть указан в новых выражениях без инициализатора
+C:\work\cpp_python\git\nm_lab_1\dll_for_py2\dll_for_py2\main_task.cpp(189,7): error C2039: "memcpy": не является членом "std".
+C:\work\cpp_python\git\nm_lab_1\dll_for_py2\dll_for_py2\predefined C++ types (compiler internal)(340): message : см. объявление "std"
+C:\work\cpp_python\git\nm_lab_1\dll_for_py2\dll_for_py2\main_task.cpp(189,19): error C2065: d_v: необъявленный идентификатор
+C:\work\cpp_python\git\nm_lab_1\dll_for_py2\dll_for_py2\main_task.cpp(189,31): error C2065: d_v: необъявленный идентификатор
+C:\work\cpp_python\git\nm_lab_1\dll_for_py2\dll_for_py2\main_task.cpp(189,51): error C2065: d_v: необъявленный идентификатор
+C:\work\cpp_python\git\nm_lab_1\dll_for_py2\dll_for_py2\main_task.cpp(189,57): error C2660: memcpy: функция не принимает 1 аргументов
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\vcruntime_string.h(43,15): message : см. объявление "memcpy"
+C:\work\cpp_python\git\nm_lab_1\dll_for_py2\dll_for_py2\main_task.cpp(190,13): error C2065: d_v: необъявленный идентификатор
+  test_task.cpp
+C:\work\cpp_python\git\nm_lab_1\dll_for_py2\dll_for_py2\test_task.cpp(14,9): warning C4552: "*": результат выражения не используется
+C:\work\cpp_python\git\nm_lab_1\dll_for_py2\dll_for_py2\test_task.cpp(42,7): error C2039: "vector": не является членом "std".
+C:\work\cpp_python\git\nm_lab_1\dll_for_py2\dll_for_py2\predefined C++ types (compiler internal)(340): message : см. объявление "std"
+C:\work\cpp_python\git\nm_lab_1\dll_for_py2\dll_for_py2\test_task.cpp(42,13): error C2065: vector: необъявленный идентификатор
+C:\work\cpp_python\git\nm_lab_1\dll_for_py2\dll_for_py2\test_task.cpp(42,14): error C2062: тип "double" не требуется
+C:\work\cpp_python\git\nm_lab_1\dll_for_py2\dll_for_py2\test_task.cpp(44,2): error C2065: d_v: необъявленный идентификатор
+  Создание кода...
