@@ -42,7 +42,7 @@ class Interface:
         task_l = tk.Label(text='Задача', bg='#ececec').grid(row=1, column=0, padx=(10, 0), sticky='we')
         task_types = ['Тестовая', 'Основная1', 'Основная2']
         self.task_c = ttk.Combobox(values=task_types)
-        self.task_c.current(0)
+        self.task_c.current(1)
         self.task_c.grid(row=2, column=0, sticky='news', padx=10)
         u_l = tk.Label(text='Начальные условия', bg='#ececec').grid(row=3, column=0, padx=(10, 0), sticky='we')
         u_e = tk.Entry(highlightbackground='#cbcbcb', textvariable=self.x0).grid(row=4, column=0,
@@ -104,33 +104,46 @@ class Interface:
                               sticky='we')
 
         # таблица
-    def table(self, p, _i, d):
-       if (self.task_c.get()=='Тестовая'):
-           heads = ['i', 'xi', 'Vi', 'V2i', 'Vi-V2i', 'ОЛП', 'hi',  'C1', 'C2', 'E', 'Ui']
-       else:
-           heads = ['i', 'xi', 'Vi', 'V2i', 'Vi-V2i', 'ОЛП', 'hi',  'C1', 'C2']
-       self.table = ttk.Treeview(self.master, show='headings')
-       self.table['columns'] = heads
-       self.table.grid(row=9, column=5, columnspan=3, rowspan=3, padx=(10, 0), sticky=tk.NSEW)
-       for header in heads:
-           self.table.heading(header, text=header, anchor='center')
-           self.table.column(header, anchor='center')
-           self.table.column(header, width=70)
-       _s = 0
-       for z in range(int(_i.value / p['k'])):
-           if d[p['e'] + z * p['k']] == 0:
-               if z != 0:
-                   _s = "<1e-16"
-           else:
-               _s = d[p['e'] + z * p['k']]
-           self.table.insert('', tk.END, values=(
-           z, round((d[p['x'] + z * p['k']]), 4), (d[p['V'] + z * p['k']]), (d[p['V2'] + z * p['k']]) ,  _s,
-           d[p['h'] + z * p['k']], d[p['U'] + z * p['k']], d[p['E'] + z * p['k']], int(d[p['c1'] + z * p['k']]),
-           int(d[p['c2'] + z * p['k']]))) #Переделать, когда будет код
-       scroll_bar1 = Scrollbar(self.master, orient=VERTICAL, command=self.table.yview)
-       scroll_bar1.grid(row=9, column=9, padx=10, sticky=tk.NSEW)
-       self.table.configure(yscroll=scroll_bar1.set)
+    def add_columns(self, columns, **kwargs):
+        current_columns = list(self.tables['columns'])
+        current_columns = {key:self.tables.heading(key) for key in current_columns}
 
+        self.tables['columns'] = list(current_columns.keys()) + list(columns)
+        for key in columns:
+            self.tables.heading(key, text=key, **kwargs)
+            self.tables.column(key, width=7)
+
+        for key in current_columns:
+            state = current_columns[key].pop('state')
+            self.tables.heading(key, **current_columns[key])
+            self.tables.column(key, width=7)
+
+    def table(self, p, _i, d):  
+         heads2 = ['i', 'xi', 'Vi', 'V2i', 'Vi-V2i', 'ОЛП', 'hi',  'C1', 'C2']
+         self.tables = ttk.Treeview(self.master, show='headings')
+         self.tables['columns'] = heads2
+         self.tables.grid(row=9, column=5, columnspan=3, rowspan=3, padx=(10, 0), sticky=tk.NSEW)
+         for header in heads2:
+             self.tables.heading(header, text=header, anchor='center')
+             self.tables.column(header, anchor='center')
+             self.tables.column(header, width=7)
+         _s = 0
+         for z in range(int(_i.value / p['k'])):
+             if d[p['e'] + z * p['k']] == 0:
+                 if z != 0:
+                     _s = "<1e-16"
+             else:
+                 _s = d[p['e'] + z * p['k']]
+             self.table.insert('', tk.END, values=(
+             z, round((d[p['xi'] + z * p['k']]), 4), (d[p['Vi'] + z * p['k']]), (d[p['2Vi'] + z * p['k']]), (d[p['Vi-V2i'] + z * p['k']]),  _s,
+             d[p['hi'] + z * p['k']], int(d[p['C1'] + z * p['k']]), int(d[p['C2'] + z * p['k']]), d[p['E'] + z * p['k']], (d[p['Ui'] + z * p['k']])))
+       
+         if (self.task_c.get()=='Тестовая'):
+             self.add_columns(('E', 'Ui'))
+          
+         scroll_bar1 = Scrollbar(self.master, orient=VERTICAL, command=self.tables.yview)
+         scroll_bar1.grid(row=9, column=9, padx=10, sticky=tk.NSEW)
+         self.tables.configure(yscroll=scroll_bar1.set)        
 
         # график
     def plotOnPlane(self, X, Y):
@@ -243,7 +256,7 @@ class Interface:
         button_data[1] = self.cb_var.get()  # контроль ЛП True/False
 
         # подрубаем dll
-        dll = cdll.LoadLibrary("lab_1//x64//Release//lab_1.dll")
+        dll = cdll.LoadLibrary("dll_for_py//x64//Release//dll_for_py.dll")
         # вроде нужно чтобы работало
         dll.work_RK31R.argtypes = [POINTER(POINTER(c_double))]
         dll.work_RK31R.restype = None
