@@ -1,0 +1,13 @@
+﻿  pch.cpp
+  dllmain.cpp
+  lab_1.cpp
+  main_task.cpp
+C:\Users\Eugene\source\repos\nm_lab_1\lab_1\lab_1\main_task.cpp(196,23): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
+  test_task.cpp
+C:\Users\Eugene\source\repos\nm_lab_1\lab_1\lab_1\test_task.cpp(197,23): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
+     Создается библиотека C:\Users\Eugene\source\repos\nm_lab_1\lab_1\x64\Release\lab_1.lib и объект C:\Users\Eugene\source\repos\nm_lab_1\lab_1\x64\Release\lab_1.exp
+  Создание кода
+  Previous IPDB not found, fall back to full compilation.
+  All 16 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Создание кода завершено
+  lab_1.vcxproj -> C:\Users\Eugene\source\repos\nm_lab_1\lab_1\x64\Release\lab_1.dll

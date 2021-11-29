@@ -243,7 +243,7 @@ class Interface:
         button_data[1] = self.cb_var.get()  # контроль ЛП True/False
 
         # подрубаем dll
-        dll = cdll.LoadLibrary("dll_for_py//x64//Release//dll_for_py.dll")
+        dll = cdll.LoadLibrary("lab_1//x64//Release//lab_1.dll")
         # вроде нужно чтобы работало
         dll.work_RK31R.argtypes = [POINTER(POINTER(c_double))]
         dll.work_RK31R.restype = None
