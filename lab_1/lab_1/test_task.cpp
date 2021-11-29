@@ -51,8 +51,8 @@ int test_task(double* start_p, int* gran, const char* name_txt, double** py)
 	std::cout << start_p[__gran];
 	// Инициализируем переменные
 	perem a;
-	a.x = start_p[__x0];
-	a.v = start_p[__u0];
+	a.x = 0.0;
+	a.v = start_p[__x0];
 	a.v2 = 0.0;
 	a.s = 0.0;
 	a.h = start_p[__h0];
@@ -100,46 +100,52 @@ int test_task(double* start_p, int* gran, const char* name_txt, double** py)
 		}
 
 		// gran x
-		//if (gran[_xu] == 0)
-		//{
-
-		//	if (a.x > start_p[__gran] - start_p[__toch])
-		//	{
-		//		break;
-		//	}
-		//	if (a.x + a.h > start_p[__gran] - start_p[__toch])
-		//	{
-		//		// Следующий X выходит за границу
-		//		if (a.x + a.h > start_p[__gran]) {
-		//			a.h /= 2;
-		//			a.c1 += 1.0;
-		//			i--;
-		//			control = false;
-		//			continue;
-		//		}
-		//		// Следующий Х выходит к границе с точностью
-		//		else
-		//		{
-		//			end = 1;
-		//		}
-		//	}
-		//}
-
-		if (a.x > start_p[__gran])
+		if (gran[_xu] == 0)
 		{
-			break;
+
+			if (a.x > start_p[__gran] - start_p[__toch])
+			{
+
+				std::cout << "hi2";
+				break;
+
+			}
+			if (a.x + a.h > start_p[__gran] - start_p[__toch])
+			{
+				// Следующий X выходит за границу
+				if (a.x + a.h > start_p[__gran]) {
+					a.h /= 2;
+					a.c1 += 1.0;
+					i--;
+					control = false;
+					continue;
+				}
+				// Следующий Х выходит к границе с точностью
+				else
+				{
+					end = 1;
+				}
+			}
 		}
-		
+
+			
 
 		// Вычисление
 		v_temp = st_RK4(a.x, a.v, a.h, start_p, k);
-		a.v2 = st_RK4(a.x, a.v, a.h, start_p, k);
-		a.v2 = st_RK4(a.x + a.h / 2, a.v2, a.h, start_p, k);
+		a.v2 = st_RK4(a.x, a.v, a.h/2, start_p, k);
+		a.v2 = st_RK4(a.x + a.h / 2, a.v2, a.h/2, start_p, k);
 
 		//gran u--------------------------------------------
-		/*if (control)
+		if (gran[_xu] && v_temp <= start_p[__toch] + start_p[__gran])
 		{
-			if (gran[_xu] && v_temp <= start_p[__toch] + start_p[__gran])
+			if (a.v < start_p[__gran] + start_p[__toch])
+			{
+
+				std::cout << "hi1";
+				break;
+
+			}
+			if (v_temp <= start_p[__toch] + start_p[__gran])
 			{
 				if (v_temp <= start_p[__gran])
 				{
@@ -154,15 +160,17 @@ int test_task(double* start_p, int* gran, const char* name_txt, double** py)
 					end = 1;
 				}
 			}
-		}*/
+		}
+		
+
 		s_temp = fabs((a.v2 - v_temp) / (pow(2, P) - 1));
 
-		//if (control)
-		//{
+		if (control)
+		{
 			if (gran[__contr_e]) //c изминением шага или без
 			{
 				//условие, если рез функции зашел за наши параметры
-				if (s_temp > start_p[__e])
+				if (s_temp > start_p[__e]&& a.h>0.001)
 				{
 					i--;
 					a.h /= 2;
@@ -170,15 +178,13 @@ int test_task(double* start_p, int* gran, const char* name_txt, double** py)
 					continue;
 				}
 				
-				if (s_temp < start_p[__e] / pow(2, P + 1) && a.h < 10)
+				if (s_temp < start_p[__e] / pow(2, P + 1))
 				{
 					a.h *= 2;
 					a.c2 += 1.0;
-					i--;
-					continue;
 				}
 			}
-		//}
+		}
 
 		a.x += a.h;
 
@@ -203,6 +209,7 @@ int test_task(double* start_p, int* gran, const char* name_txt, double** py)
 
 		if (end)
 		{
+			std::cout << "hi";
 			break;
 		}
 	}
