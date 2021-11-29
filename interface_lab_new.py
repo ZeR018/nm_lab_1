@@ -134,7 +134,7 @@ class Interface:
                      _s = "<1e-16"
              else:
                  _s = d[p['e'] + z * p['k']]
-             self.table.insert('', tk.END, values=(
+             self.tables.insert('', tk.END, values=(
              z, round((d[p['xi'] + z * p['k']]), 4), (d[p['Vi'] + z * p['k']]), (d[p['2Vi'] + z * p['k']]), (d[p['Vi-V2i'] + z * p['k']]),  _s,
              d[p['hi'] + z * p['k']], int(d[p['C1'] + z * p['k']]), int(d[p['C2'] + z * p['k']]), d[p['E'] + z * p['k']], (d[p['Ui'] + z * p['k']])))
        
@@ -187,20 +187,20 @@ class Interface:
         for z in range(1, int(_i.value / p['k'])):
             if d[p['e'] + z * p['k']] > max_olp:
                 max_olp = d[p['e'] + z * p['k']]
-                max_olp_x = d[p['x'] + z * p['k']]
+                max_olp_x = d[p['xi'] + z * p['k']]
             if d[p['E'] + z * p['k']] > max_error:
                 max_error = d[p['E'] + z * p['k']]
-                max_error_point = d[p['x'] + z * p['k']]
-            div_counter += d[p['c1'] + z * p['k']]
-            mul_counter += d[p['c2'] + z * p['k']]
-            if d[p['h'] + z * p['k']] > max_step:
-                max_step = d[p['h'] + z * p['k']]
-                max_step_x = d[p['x'] + z * p['k']]
-            if d[p['h'] + z * p['k']] < min_step:
-                min_step = d[p['h'] + z * p['k']]
-                min_step_x = d[p['x'] + z * p['k']]
-            result_x = d[p['x'] + z * p['k']]
-            result_v = d[p['V'] + z * p['k']]
+                max_error_point = d[p['xi'] + z * p['k']]
+            div_counter += d[p['C1'] + z * p['k']]
+            mul_counter += d[p['C2'] + z * p['k']]
+            if d[p['hi'] + z * p['k']] > max_step:
+                max_step = d[p['hi'] + z * p['k']]
+                max_step_x = d[p['xi'] + z * p['k']]
+            if d[p['hi'] + z * p['k']] < min_step:
+                min_step = d[p['hi'] + z * p['k']]
+                min_step_x = d[p['xi'] + z * p['k']]
+            result_x = d[p['xi'] + z * p['k']]
+            result_v = d[p['Vi'] + z * p['k']]
         self.reference_t.insert(1.0, 'Метод РК3\n\n')
         self.reference_t.insert(3.0, 'Число шагов: ' + str(int(_i.value / p['k'])-1) + '\n')
         self.reference_t.insert(4.0, 'Число удвоений: ' + str(int(mul_counter)) + '\n')
@@ -237,7 +237,7 @@ class Interface:
         # записываем начальные условия задачи
         init_params = (c_double * 10)()
         init_params[0] = self.x0.get()
-        init_params[1] = 0
+        init_params[1] = 1
         init_params[2] = self.step.get()
         #init_params[3] = self.a1.get()
         #init_params[4] = self.a3.get()
@@ -256,7 +256,7 @@ class Interface:
         button_data[1] = self.cb_var.get()  # контроль ЛП True/False
 
         # подрубаем dll
-        dll = cdll.LoadLibrary("dll_for_py//x64//Release//dll_for_py.dll")
+        dll = cdll.LoadLibrary("lab_1//x64//Release//lab_1.dll")
         # вроде нужно чтобы работало
         dll.work_RK31R.argtypes = [POINTER(POINTER(c_double))]
         dll.work_RK31R.restype = None
@@ -265,13 +265,14 @@ class Interface:
         dll.work_RK31R.restype = None
 
         # для ракрытия массива
-        p = {'k': 9, 'x': 0, 'V': 1, 'V2': 2, 'e': 3, 'h': 4, 'U': 5, 'E': 6, 'c1': 7, 'c2': 8}
+        p = {'k': 10, 'xi': 0, 'Vi': 1, '2Vi': 2, 'Vi-V2i': 3, 'e': 4, 'hi': 5, 'Ui': 6, 'E': 7, 'C1': 8, 'C2': 9}
 
         # главный массив
         d = POINTER(c_double)()
 
         # количество эл в массиве
         _i = (c_int)()
+        _i.value = 0
 
         # работа
         dll.work_RK31R(byref(d), byref(init_params), byref(button_data), byref(_i))
@@ -292,10 +293,10 @@ class Interface:
 
         X = []
         for z in range(int(_i.value / p['k'])):
-            X.append(d[p['x'] + z * p['k']])
+            X.append(d[p['xi'] + z * p['k']])
         Y = []
         for z in range(int(_i.value / p['k'])):
-            Y.append(d[p['V'] + z * p['k']])
+            Y.append(d[p['Vi'] + z * p['k']])
 
         self.figure = self.plotOnPlane(X, Y)
         self.create_form_graph(self.figure)  # график

@@ -38,7 +38,7 @@ double st_RK(double x, double v, double h, double* start_p, double* k)
 	return v + h / 6 * (k[0] + 2 * k[1] + 2 * k[2] + k[3]);
 }
 
-int main_task(double* start_p, int* gran, char* name_txt, double** py)
+int main_task(double* start_p, int* gran, const char* name_txt, double** py)
 {
 	perem p;
 	p.x = start_p[__x0];
