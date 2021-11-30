@@ -25,17 +25,18 @@ struct perem {
 double f_2(double x, double v)
 {
 	double a = pow(1 + x * x, 1 / 3);
-	return v * v / a + v + v * v * v * sin(10 * x);
+	//std::cout << sin(10) << "\t" << x << "\n";
+	return (v * v) / a + v - v * v * v * sin(572*x);
 }
 
 double st_RK(double x, double v, double h, double* start_p, double* k)
 {
 	k[0] = f_2(x, v);
-	k[1] = f_2(x + h / 2, v + h / 2 * k[0]);
-	k[2] = f_2(x + h / 2, v + h / 2 * k[1]);
-	k[3] = f_2(x + h / 2, v + h * k[2]);
+	k[1] = f_2(x + h / 2, v + h  * k[0] / 2);
+	k[2] = f_2(x + h / 2, v + h  * k[1]/2);
+	k[3] = f_2(x + h, v + h * k[2]);
 
-	return v + h / 6 * (k[0] + 2 * k[1] + 2 * k[2] + k[3]);
+	return v + h  * (k[0] + 2 * k[1] + 2 * k[2] + k[3]) / 6;
 }
 
 int main_task(double* start_p, int* gran, const char* name_txt, double** py)
@@ -53,13 +54,16 @@ int main_task(double* start_p, int* gran, const char* name_txt, double** py)
 
 	vector<double> d_v;
 
-	d_v.push_back(p.x);
+	d_v.push_back(p.x); //x
 	d_v.push_back(p.v); //v1
 	d_v.push_back(p.v); //v2
-	d_v.push_back(p.s);
-	d_v.push_back(p.h);
-	d_v.push_back(p.c1);
-	d_v.push_back(p.c2);
+	d_v.push_back(0.0);  // Vi - V2i
+	d_v.push_back(p.s); //s
+	d_v.push_back(0.0);  // h0
+	d_v.push_back(0.0);  // u
+	d_v.push_back(0.0);  // E
+	d_v.push_back(p.c1);//c1
+	d_v.push_back(p.c2);//c2
 
 	int j = 1;
 	int y = 0;
@@ -72,8 +76,10 @@ int main_task(double* start_p, int* gran, const char* name_txt, double** py)
 	//string name = string(name_txt);
 	//ofstream _f(name);
 
+
 	for (int i = 0; ; i++)
 	{
+		
 		//max step-------------------------------------
 		if (i >= static_cast<int>(start_p[__max_step]))
 		{
@@ -89,11 +95,14 @@ int main_task(double* start_p, int* gran, const char* name_txt, double** py)
 
 		z = 0;
 
-		//увеличиваем x
-		p.x += p.h;
+
+		if (p.v > start_p[__gran])
+		{
+			break;
+		}
 
 		//gran x------------------------------------------------
-		if (gran[_xu] == 0 && start_p[__gran] + start_p[__toch] < p.x)
+		/*if (gran[_xu] == 0 && start_p[__gran] + start_p[__toch] < p.x)
 		{
 			p.x -= p.h;
 			i--;
@@ -105,7 +114,7 @@ int main_task(double* start_p, int* gran, const char* name_txt, double** py)
 			}
 			p.c1 += 1.0;
 			continue;
-		}
+		}*/
 		//-----------------------------------------------------------
 
 
@@ -119,7 +128,7 @@ int main_task(double* start_p, int* gran, const char* name_txt, double** py)
 		v2 = st_RK(p.x + p.h / 2, v2, p.h / 2, start_p, k);
 
 		//gran u--------------------------------------------
-		if (gran[_xu] && v_temp <= start_p[__toch] + start_p[__gran])
+		/*if (gran[_xu] && v_temp <= start_p[__toch] + start_p[__gran])
 		{
 			if (v_temp <= start_p[__gran])
 			{
@@ -134,7 +143,7 @@ int main_task(double* start_p, int* gran, const char* name_txt, double** py)
 			{
 				y = 1;
 			}
-		}
+		}*/
 
 
 
@@ -149,7 +158,7 @@ int main_task(double* start_p, int* gran, const char* name_txt, double** py)
 				if (s_temp > start_p[__e])
 				{
 					i--;
-					p.x -= p.h;
+					//p.x -= p.h;
 					p.h = p.h / 2;
 					p.c1 += 1.0;
 					continue;
@@ -173,13 +182,19 @@ int main_task(double* start_p, int* gran, const char* name_txt, double** py)
 		p.s = s_temp * pow(2, P);
 
 
+		//увеличиваем x
+		p.x += p.h;
+
 
 		//кидаем в вектор то что нужно
 		d_v.push_back(p.x);
 		d_v.push_back(p.v); //v1
 		d_v.push_back(v2); //v2
+		d_v.push_back(fabs(p.v-v2)); //v2-v1
 		d_v.push_back(p.s);
 		d_v.push_back(p.h);
+		d_v.push_back(0.0);
+		d_v.push_back(0.0);
 		d_v.push_back(p.c1);
 		d_v.push_back(p.c2);
 		p.c1 = 0.0;
@@ -190,11 +205,10 @@ int main_task(double* start_p, int* gran, const char* name_txt, double** py)
 		}
 
 	}
-
+	
 	*py = new double[d_v.size()];
 	std::memcpy(*py, d_v.data(), d_v.size() * sizeof d_v[0]);
 	int size = d_v.size();
-
 	return size;
 
 }

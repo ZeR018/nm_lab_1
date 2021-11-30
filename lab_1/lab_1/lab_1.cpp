@@ -23,6 +23,10 @@ extern "C" __declspec(dllexport) void __stdcall work_RK31R(double** data, double
 	{
 		*_i = systen_task(start, gran, "test2.txt", data);
 	}
+
+
+	
+	//std::cout << *_i << "\n";
 }
 
 extern "C" __declspec(dllexport) void __stdcall del_mem(double** data)
