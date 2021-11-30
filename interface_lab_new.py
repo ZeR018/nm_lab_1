@@ -232,12 +232,20 @@ class Interface:
 
     #  выполняется при нажатии кнопки "Вычислить"
     def execute(self):
+        _i = (c_int)()
         self.clear_b.grid(
             row=6, column=6, padx=10, pady=(0, 10), sticky='we')
         # записываем начальные условия задачи
+        if self.task_c.get() == 'Тестовая':
+            _i.value = 0
+        elif self.task_c.get() == 'Основная1':
+            _i.value = 1
+        else:
+            _i.value = 2
         init_params = (c_double * 10)()
-        init_params[0] = self.x0.get()
-        init_params[1] = 1
+
+        init_params[0] = 0
+        init_params[1] = self.x0.get()
         init_params[2] = self.step.get()
         #init_params[3] = self.a1.get()
         #init_params[4] = self.a3.get()
@@ -271,8 +279,7 @@ class Interface:
         d = POINTER(c_double)()
 
         # количество эл в массиве
-        _i = (c_int)()
-        _i.value = 0
+
 
         # работа
         dll.work_RK31R(byref(d), byref(init_params), byref(button_data), byref(_i))
