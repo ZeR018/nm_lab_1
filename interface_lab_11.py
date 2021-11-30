@@ -209,13 +209,17 @@ class Interface:
 
 
     def dll_work(self):
+        _i = (c_int)()
         init_params = (c_double * 10)()
         init_params[0] = 0
         if self.task_c.get() == 'Тестовая':
+            _i.value = 0
             init_params[1] = self.u0_test.get()
         elif self.task_c.get() == 'Основная1':
+            _i.value = 1
             init_params[1] = self.u0_main_1.get()
         else:
+            _i.value = 2
             init_params[1] = self.u0_main_2.get()
         init_params[2] = self.step.get()
         init_params[3] = self.a.get()
@@ -237,7 +241,7 @@ class Interface:
 
         p = {'k': 10, 'xi': 0, 'Vi': 1, '2Vi': 2, 'Vi-V2i': 3, 'e': 4, 'hi': 5, 'Ui': 6, 'E': 7, 'C1': 8, 'C2': 9}
         d = POINTER(c_double)()
-        _i = (c_int)()
+
 
         dll.work_RK31R(byref(d), byref(init_params), byref(button_data), byref(_i))
         return p, d, _i
