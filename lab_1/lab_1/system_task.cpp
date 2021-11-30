@@ -1,10 +1,14 @@
 #include "system_task.h"
-#include <vector>
+#include<fstream>
+
+#include <math.h>
 #include"pch.h"
+#include <vector>
+#include <iostream>
 
 #define P 4
 
-enum { __u0, __h0, __a, __b, __u20, __e, __max_step, __gran, __toch };
+enum { __x0, __u0, __h0, __a, __b, __u20, __e, __max_step, __gran, __toch };
 enum { _xu, __contr_e, __method };
 
 double f_3_1(double v2)
@@ -23,20 +27,21 @@ struct v_value
 	double v2;
 };
 
-v_value st_RK4_S(double x, double v1, double v2, double h, double* start_p)
+v_value st_RK4_S(double x, double v1, double v2, double h, double* start_p, double* k1, double* k2)
 {
-	double k1_1 = f_3_1(v2);
-	double k2_1 = f_3_2(v1, v2, start_p[__a], start_p[__b]);
-	double k1_2 = f_3_1(v2 + h / 2 * k2_1);
-	double k2_2 = f_3_2(v1 + h / 2 * k1_1, v2 + h / 2 * k2_1, start_p[__a], start_p[__b]);
-	double k1_3 = f_3_1(v2 + h / 2 * k2_2);
-	double k2_3 = f_3_2(v1 + h / 2 * k1_2, v2 + h / 2 * k2_2, start_p[__a], start_p[__b]);
-	double k1_4 = f_3_1(v2 + h * k2_3);
-	double k2_4 = f_3_2(v1 + h * k1_3, v2 + h * k2_3, start_p[__a], start_p[__b]);
+	k1[0] = f_3_1(v2);
+	k2[0] = f_3_2(v1, v2, start_p[__a], start_p[__b]);
+	k1[1] = f_3_1(v2 + h / 2 * k2[0]);
+	k2[1] = f_3_2(v1 + h / 2 * k1[0], v2 + h / 2 * k2[0], start_p[__a], start_p[__b]);
+	k1[2] = f_3_1(v2 + h / 2 * k2[1]);
+	k2[2] = f_3_2(v1 + h / 2 * k1[1], v2 + h / 2 * k2[1], start_p[__a], start_p[__b]);
+	k1[3] = f_3_1(v2 + h * k2[2]);
+	k2[3] = f_3_2(v1 + h * k1[2], v2 + h * k2[2], start_p[__a], start_p[__b]);
 
 	v_value res;
-	res.v1 = v1 + h / 6 * (k1_1 + 2 * k1_2 + 2 * k1_3 + k1_4);
-	res.v2 = v2 + h / 6 * (k2_1 + 2 * k2_2 + 2 * k2_3 + k2_4);
+	res.v1 = v1 + h / 6 * (k1[0] + 2 * k1[1] + 2 * k1[2] + k1[3]);
+	res.v2 = v2 + h / 6 * (k2[0] + 2 * k2[1] + 2 * k2[2] + k2[3]);
+	return res;
 }
 
 struct perem {
@@ -47,8 +52,6 @@ struct perem {
 	double v22;
 	double s;
 	double h;
-	double u;
-	double E;
 	double c1;
 	double c2;
 };
@@ -66,12 +69,16 @@ int systen_task(double* start_p, int* gran, const char* name_txt, double** py)
 	a.c1 = 0.0;
 	a.c2 = 0.0;
 
+	// Массив К для метода и вектор результатов
+	double* k1 = new double[4];
+	double* k2 = new double[4];
+
 	std::vector<double> d_v;
 
 	int end = 0;
 	v_value temp1, temp2;
-	double s_temp = 0.0;
 	double control = true;
+	double change_h = false;
 
 	d_v.push_back(a.x);   // x
 	d_v.push_back(a.v11); // v
@@ -79,11 +86,16 @@ int systen_task(double* start_p, int* gran, const char* name_txt, double** py)
 	d_v.push_back(0.0);   // Vi - V2i
 	d_v.push_back(a.s);   // s
 	d_v.push_back(0.0);   // h0
+	d_v.push_back(a.v21);  // (u) вместо них скорость и скорость с половинным шагом
+	d_v.push_back(a.v22);  // (E)
 	d_v.push_back(a.c1);  // c1
 	d_v.push_back(a.c2);  // c2
 
+
+
 	for (int i = 0; ; i++)
 	{
+		change_h = false;
 		//max step-------------------------------------
 		if (i >= static_cast<int>(start_p[__max_step]))
 		{
@@ -91,42 +103,46 @@ int systen_task(double* start_p, int* gran, const char* name_txt, double** py)
 		}
 
 		//gran x------------------------------------------------
-		if (gran[_xu] == 0 && start_p[__gran] + start_p[__toch] < a.x)
+		if (gran[_xu] == 0 && a.x + a.h >= start_p[__gran] - start_p[__toch])
 		{
-			i--;
-			//j = 0;
-			if (a.h < start_p[__toch])
+			if (a.x >= start_p[__gran] - start_p[__toch])
 			{
 				break;
 			}
-			a.h /= 2;
-			a.c1 += 1.0;
-			continue;
+			if (a.x + a.h > start_p[__gran] - start_p[__toch])
+			{
+				a.h /= 2;
+				a.c1 += 1.0;
+				control = false;
+				continue;
+			}
 		}
 		//-----------------------------------------------------------
 
-		temp1 = st_RK4_S(a.x, a.v11, a.v21, a.h, start_p);
-		temp2 = st_RK4_S(a.x, a.v11, a.v21, a.h / 2, start_p);
-		temp2 = st_RK4_S(a.x + a.h / 2, temp2.v1, temp2.v2, a.h / 2, start_p);
+		temp1 = st_RK4_S(a.x, a.v11, a.v21, a.h, start_p, k1, k2);
+		temp2 = st_RK4_S(a.x, a.v11, a.v21, a.h / 2, start_p, k1, k2);
+		temp2 = st_RK4_S(a.x + a.h / 2, temp2.v1, temp2.v2, a.h / 2, start_p, k1, k2);
 
-		s_temp = fabs((temp1.v1 - temp2.v1) / (pow(2, P) - 1));
+		a.s = fabs((temp1.v1 - temp2.v1) / (pow(2, P) - 1));
 
-		if (gran[__contr_e]) //c изминением шага или без
+		if (control)
 		{
-			//условие, если рез функции зашел за наши параметры
-			if (s_temp > start_p[__e])
+			if (gran[__contr_e]) //c изминением шага или без
 			{
-				i--;
-				a.h /= 2;
-				a.c1 += 1.0;
-				continue;
-			}
+				//условие, если рез функции зашел за наши параметры
+				if (a.s > start_p[__e])
+				{
+					i--;
+					a.h /= 2;
+					a.c1 += 1.0;
+					continue;
+				}
 
-			if (s_temp < start_p[__e] / pow(2, P + 1))
-			{
-				a.h *= 2;
-				a.c2 += 1.0;
-				continue;
+				else if (a.s < start_p[__e] / pow(2, P + 1))
+				{
+					a.c2 += 1.0;
+					change_h = true;
+				}
 			}
 		}
 
@@ -137,14 +153,25 @@ int systen_task(double* start_p, int* gran, const char* name_txt, double** py)
 		a.v21 = temp1.v2;
 		a.v22 = temp2.v2;
 
+
+		if (change_h)
+		{
+			a.h *= 2;
+		}
+		
 		d_v.push_back(a.x);   // x
 		d_v.push_back(a.v11); // v
 		d_v.push_back(a.v12); // v2
-		d_v.push_back(a.v11 - a.v12);   // Vi - V2i
+		d_v.push_back(fabs(a.v11 - a.v12));   // Vi - V2i
 		d_v.push_back(a.s);   // s
 		d_v.push_back(a.h);   // h
+		d_v.push_back(0.0);  // u
+		d_v.push_back(0.0);  // E
 		d_v.push_back(a.c1);  // c1
 		d_v.push_back(a.c2);  // c2
+
+		a.c1 = 0;
+		a.c2 = 0;
 	}
 
 	//собираем массив и кидаем в питон
