@@ -20,12 +20,12 @@ class Interface:
         master.configure(bg='#ececec')  # фон
         master.minsize(1200, 500)  # минимальный размер окна
 
-        self.u0_test = tk.DoubleVar(master, 7.5)  # u0 тестовая задача
-        self.u0_main_1 = tk.DoubleVar(master, 7.5)  # u0 основная 1 задача
-        self.u0_main_2 = tk.DoubleVar(master, 7.5)  # u0 основная 2 задача
-        self.u0_quote = tk.DoubleVar(master, 0)  # u0' основная 2 задача
-        self.a = tk.DoubleVar(master, 175)  # a
-        self.b = tk.DoubleVar(master, 0.3)  # b
+        self.u0_test = tk.DoubleVar(master, 1)  # u0 тестовая задача
+        self.u0_main_1 = tk.DoubleVar(master, 2)  # u0 основная 1 задача
+        self.u0_main_2 = tk.DoubleVar(master, 3)  # u0 основная 2 задача
+        self.u0_quote = tk.DoubleVar(master, 4)  # u0' основная 2 задача
+        self.a = tk.DoubleVar(master, 5)  # a
+        self.b = tk.DoubleVar(master, 6)  # b
         self.border = tk.DoubleVar(master, 100.0)  # правая граница
         self.accuracy = tk.DoubleVar(master, 0.0001)  # точность выхода на правую границу
         self.error = tk.DoubleVar(master, 0.00001)  # контроль лок. поргрешности
@@ -37,6 +37,8 @@ class Interface:
         self.label_1 = ['График зависимости смещения груза U от времени x', 'x, сек.', 'U(x), м.']
         self.label_2 = ["График зависимости скорости груза U' от времени x", 'x, сек.', "U'(x), м/сек."]
         self.label_3 = ["График зависимости скорости U' от смещения груза U ", "U(x), м.", "U', м/сек."]
+
+        self.t = 0
 
         self.create_widgets()
 
@@ -207,30 +209,33 @@ class Interface:
 
 
     def dll_work(self):
-        init_params = (c_double * 11)()
-        init_params[0] = self.x0.get()
-        init_params[1] = self.u0.get()
-        init_params[2] = self.u0_quote.get()
-        init_params[3] = self.step.get()
-        init_params[4] = self.k.get()
-        init_params[5] = self.f.get()
-        init_params[6] = self.m.get()
-        init_params[7] = self.error.get()
-        init_params[8] = self.max_step.get()
-        init_params[9] = self.border.get()
-        init_params[10] = self.accuracy.get()
+        init_params = (c_double * 10)()
+        init_params[0] = 0
+        if self.task_c.get() == 'Тестовая':
+            init_params[1] = self.u0_test.get()
+        elif self.task_c.get() == 'Основная1':
+            init_params[1] = self.u0_main_1.get()
+        else:
+            init_params[1] = self.u0_main_2.get()
+        init_params[2] = self.step.get()
+        init_params[3] = self.a.get()
+        init_params[4] = self.b.get()
+        init_params[5] = self.u0_quote.get()
+        init_params[6] = self.error.get()
+        init_params[7] = self.max_step.get()
+        init_params[8] = self.border.get()
+        init_params[9] = self.accuracy.get()
 
         button_data = (c_int * 2)()
         button_data[1] = self.cb_var.get()  # контроль ЛП True/False
 
-        dll = cdll.LoadLibrary("dll_for_py2//x64//Release//dll_for_py2.dll")
+        dll = cdll.LoadLibrary("lab_1//x64//Release//lab_1.dll")
         dll.work_RK31R.argtypes = [POINTER(POINTER(c_double))]
         dll.work_RK31R.restype = None
         dll.del_mem.argtypes = [POINTER(POINTER(c_double))]
         dll.work_RK31R.restype = None
 
-        p = {'x': 0, 'V1': 1, 'V2': 2, 'V11': 3, 'V22': 4, 'e': 5, 'h': 6, 'U1': 7, 'U2': 8, 'E': 9, 'c1': 10,
-             'c2': 11, 'k': 12}
+        p = {'k': 10, 'xi': 0, 'Vi': 1, '2Vi': 2, 'Vi-V2i': 3, 'e': 4, 'hi': 5, 'Ui': 6, 'E': 7, 'C1': 8, 'C2': 9}
         d = POINTER(c_double)()
         _i = (c_int)()
 
@@ -238,9 +243,12 @@ class Interface:
         return p, d, _i
 
     def create_table(self):
+        if self.t == 1:
+            self.table.destroy()
         #heads = ['k', 'x', 'V1', 'V2', 'V11', 'V22', 'ОЛП', 'h', 'U', 'u2', 'E', 'C1', 'C2']
-        heads = ['k', 'x', 'V1', 'V2', 'V11', 'V22', 'ОЛП', 'h', 'C1', 'C2']
+        heads = ['i', 'xi', 'Vi', 'V2i', 'Vi-V2i', 'ОЛП', 'hi', 'C1', 'C2', 'E', 'Ui']
         self.table = ttk.Treeview(self.table_frame, show='headings', height=20)
+        self.t = 1
         self.table['columns'] = heads
         self.table.grid(row=0, column=0, sticky=tk.NSEW)
         for header in heads:
@@ -251,26 +259,19 @@ class Interface:
     def fill_table(self, p, d, _i):
         _s = 0
         for z in range(int(_i.value / p['k'])):
-
             if d[p['e'] + z * p['k']] == 0:
                 if z != 0:
                     _s = "<1e-16"
             else:
                 _s = d[p['e'] + z * p['k']]
             self.table.insert('', tk.END, values=(
-                z,
-                round((d[p['x'] + z * p['k']]), 4),
-                (d[p['V1'] + z * p['k']]),
-                (d[p['V2'] + z * p['k']]),
-                (d[p['V11'] + z * p['k']]),
-                (d[p['V22'] + z * p['k']]),
-                _s,
-                d[p['h'] + z * p['k']],
-                #d[p['U1'] + z * p['k']],
-                #d[p['U2'] + z * p['k']],
-                #d[p['E'] + z * p['k']],
-                int(d[p['c1'] + z * p['k']]),
-                int(d[p['c2'] + z * p['k']])))
+                z, round((d[p['xi'] + z * p['k']]), 4), (d[p['Vi'] + z * p['k']]), (d[p['2Vi'] + z * p['k']]),
+                (d[p['Vi-V2i'] + z * p['k']]), _s,
+                d[p['hi'] + z * p['k']], int(d[p['C1'] + z * p['k']]), int(d[p['C2'] + z * p['k']]),
+                d[p['E'] + z * p['k']], (d[p['Ui'] + z * p['k']])))
+
+        if (self.task_c.get() == 'Тестовая'):
+            self.add_columns(('E', 'Ui'))
         scroll_bar1 = Scrollbar(self.table_frame, orient=VERTICAL, command=self.table.yview)
         scroll_bar1.grid(row=0, column=1, sticky=tk.NSEW)
         self.table.configure(yscroll=scroll_bar1.set)
@@ -292,7 +293,7 @@ class Interface:
     def fill_graph_1(self, p, d, _i):
         X = []
         for z in range(int(_i.value / p['k'])):
-            X.append(d[p['x'] + z * p['k']])
+            X.append(d[p['xi'] + z * p['k']])
         Y = []
         for z in range(int(_i.value / p['k'])):
             Y.append(d[p['V1'] + z * p['k']])
@@ -321,6 +322,7 @@ class Interface:
 
     def execute(self):
         p, d, i = self.dll_work()
+        self.create_table()
         self.fill_table(p, d, i)
         self.fill_graph_1(p, d, i)
         self.fill_graph_2(p, d, i)
