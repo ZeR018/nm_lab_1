@@ -31,7 +31,8 @@ double st_RK4(double x, double v, double h, double* start_p, double* k)
 
 double st_true_sol_test(double x, double v, double v0)
 {
-	return exp((-3 * x + 2 * log(v0)) / 2);
+	//return exp((-3 * x + 2 * log(v0)) / 2);
+	return exp(-1.5 * x) * v0;
 }
 
 struct perem {
@@ -51,7 +52,7 @@ int test_task(double* start_p, int* gran, const char* name_txt, double** py)
 	// Инициализируем переменные
 	perem a;
 	a.x = 0.0;
-	a.v = start_p[__x0];
+	a.v = start_p[__u0];
 	a.v2 = 0.0;
 	a.s = 0.0;
 	a.h = start_p[__h0];
@@ -133,7 +134,7 @@ int test_task(double* start_p, int* gran, const char* name_txt, double** py)
 		a.v2 = st_RK4(a.x + a.h / 2, a.v2, a.h/2, start_p, k);
 
 		//gran u--------------------------------------------
-		if (gran[_xu] && v_temp <= start_p[__toch] + start_p[__gran])
+		/*if (gran[_xu] && v_temp <= start_p[__toch] + start_p[__gran])
 		{
 			if (a.v < start_p[__gran] + start_p[__toch])
 			{
@@ -155,7 +156,7 @@ int test_task(double* start_p, int* gran, const char* name_txt, double** py)
 					end = 1;
 				}
 			}
-		}
+		}*/
 		
 
 		s_temp = fabs((a.v2 - v_temp) / (pow(2, P) - 1));
