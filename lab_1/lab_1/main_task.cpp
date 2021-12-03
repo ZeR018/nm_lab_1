@@ -26,7 +26,7 @@ double f_2(double x, double v)
 {
 	double a = pow(1 + x * x, 1 / 3);
 	//std::cout << sin(10) << "\t" << x << "\n";
-	return (v * v) / a + v - v * v * v * sin(572*x);
+	return (v * v) / a + v - v * v * v * sin(10*x);
 }
 
 double st_RK(double x, double v, double h, double* start_p, double* k)
@@ -96,25 +96,26 @@ int main_task(double* start_p, int* gran, const char* name_txt, double** py)
 		z = 0;
 
 
-		if (p.v > start_p[__gran])
+		if (p.x > start_p[__gran])
 		{
 			break;
 		}
 
 		//gran x------------------------------------------------
-		/*if (gran[_xu] == 0 && start_p[__gran] + start_p[__toch] < p.x)
+		if (gran[_xu] == 0 && p.x + p.h >= start_p[__gran] - start_p[__toch])
 		{
-			p.x -= p.h;
-			i--;
-			j = 0;
-			p.h /= 2;
-			if (p.h < start_p[__toch])
+			if (p.x >= start_p[__gran] - start_p[__toch])
 			{
 				break;
 			}
-			p.c1 += 1.0;
-			continue;
-		}*/
+			if (p.x + p.h > start_p[__gran] - start_p[__toch])
+			{
+				p.h /= 2;
+				p.c1 += 1.0;
+				j = false;
+				continue;
+			}
+		}
 		//-----------------------------------------------------------
 
 

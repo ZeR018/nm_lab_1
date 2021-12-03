@@ -165,8 +165,8 @@ int systen_task(double* start_p, int* gran, const char* name_txt, double** py)
 		d_v.push_back(fabs(a.v11 - a.v12));   // Vi - V2i
 		d_v.push_back(a.s);   // s
 		d_v.push_back(a.h);   // h
-		d_v.push_back(0.0);  // u
-		d_v.push_back(0.0);  // E
+		d_v.push_back(a.v21);  // U'
+		d_v.push_back(a.v22);  // U2'
 		d_v.push_back(a.c1);  // c1
 		d_v.push_back(a.c2);  // c2
 
