@@ -145,14 +145,20 @@ class Interface:
              self.tables.column(header, anchor='center')
              self.tables.column(header, width=7)
          _s = 0
+         _s2 = 0
          for z in range(int(_i.value / p['k'])):
              if d[p['e'] + z * p['k']] == 0:
                  if z != 0:
                      _s = "<1e-16"
              else:
                  _s = d[p['e'] + z * p['k']]
+             if d[p['Vi-V2i'] + z * p['k']] == 0:
+                 if z != 0:
+                     _s2 = "<1e-16"
+             else:
+                     _s2 = d[p['Vi-V2i'] + z * p['k']]
              self.tables.insert('', tk.END, values=(
-             z, round((d[p['xi'] + z * p['k']]), 4), (d[p['Vi'] + z * p['k']]), (d[p['2Vi'] + z * p['k']]), (d[p['Vi-V2i'] + z * p['k']]),  _s,
+             z, round((d[p['xi'] + z * p['k']]), 4), (d[p['Vi'] + z * p['k']]), (d[p['2Vi'] + z * p['k']]), _s2,  _s,
              d[p['hi'] + z * p['k']], int(d[p['C1'] + z * p['k']]), int(d[p['C2'] + z * p['k']]), d[p['E'] + z * p['k']], (d[p['Ui'] + z * p['k']])))
        
          if (self.task_c.get()=='Тестовая'):
@@ -167,6 +173,8 @@ class Interface:
         f = plt.figure(num=2, figsize=(7, 5), dpi=80, facecolor='#ececec')
         fig = plt.subplot(1, 1, 1)
         fig.set_title('График')
+        fig.set_xlabel('x')
+        fig.set_ylabel('U(x)')
         if self.gr.get()==1 and self.task_c.get()=='Основная2':
            fig.plot(Y, U, label = 'Численная траектория')
            fig.set_xlabel('U')
@@ -175,16 +183,15 @@ class Interface:
             fig.plot(X, Y, label = 'Численная траектория')
             if self.task_c.get() == 'Тестовая':
                 fig.plot(X, U, label = 'Истинная траектория')
-            fig.set_xlabel('x')
-            fig.set_ylabel('U(x)')
+
             fig.legend()
         return f
 
     def cleanPlot(self):
         plt.cla()
         f = plt.figure(num=2, figsize=(7, 5), dpi=80, facecolor='#ececec')
-        fig = plt.subplot(1, 1, 1)
-        fig.set_title('График')
+        fig1 = plt.subplot(1, 1, 1)
+        fig1.set_title('График')
         #fig.set_xlabel('x')
         #fig.set_ylabel('U(x)')
         self.canvas.draw()
@@ -280,8 +287,6 @@ class Interface:
         button_data = (c_int * 2)()
         button_data[0] = 0  # выбор границы 0 - x, 1 - u
         button_data[1] = self.cb_var.get()  # контроль ЛП True/False
-        #if self.task_c.get()=='Основная2':
-        #  init_params[3]=0
 
         # подрубаем dll
         dll = cdll.LoadLibrary("lab_1//x64//Release//lab_1.dll")
@@ -342,6 +347,8 @@ class Interface:
         # таблица
         self.table(p, _i, d)
         self.reference(p, _i, d)
+
+
 
         # удаляем память
         dll.del_mem(byref(d))
