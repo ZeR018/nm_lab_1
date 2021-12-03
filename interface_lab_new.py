@@ -20,18 +20,21 @@ class Interface:
         master.configure(bg='#ececec')  # фон
         master.minsize(1530, 670)  # минимальный размер окна
 
-        self.x0 = tk.DoubleVar(master, 0)  # x0
-        self.border = tk.DoubleVar(master, 100.0)  # правая граница
+        self.x0 = tk.DoubleVar(master, 1)  # x0
+        self.u0 = tk.DoubleVar(master, 1)
+        self.U = tk.DoubleVar(master, 1) #U'0
+        self.a = tk.DoubleVar(master, 0.1)
+        self.b = tk.DoubleVar(master, 2)
+        self.border = tk.DoubleVar(master, 10.0)  # правая граница
         self.accuracy = tk.DoubleVar(master, 0.0001)  # точность выхода на правую границу
         self.error = tk.DoubleVar(master, 0.00001)  # контроль лок. поргрешности
         self.max_step = tk.DoubleVar(master, 10000000)  # макс. число шагов
         self.step = tk.DoubleVar(master, 0.01)  # начальный шаг
-        self.rb_var = tk.IntVar(master)  # хранит 0 или 1 (выход на границу x или u)
-        self.rb_var.set(0)  # значение по умолчанию
         self.cb_var = tk.BooleanVar(master)  # хранит True или False (включен ли контроль погр-ти)
+        self.gr = tk.IntVar(master)
         self.cb_var.set(1)  # значение по умолчанию
-
         self.create_widgets()  # создание виджетов
+
 
     def create_widgets(self):
 
@@ -43,12 +46,25 @@ class Interface:
         task_types = ['Тестовая', 'Основная1', 'Основная2']
         self.task_c = ttk.Combobox(values=task_types)
         self.task_c.current(1)
-        self.task_c.grid(row=2, column=0, sticky='news', padx=10)
-        u_l = tk.Label(text='Начальные условия', bg='#ececec').grid(row=3, column=0, padx=(10, 0), sticky='we')
-        u_e = tk.Entry(highlightbackground='#cbcbcb', textvariable=self.x0).grid(row=4, column=0,
+        self.task_c.grid(row=1, column=0, columnspan=2, sticky='WE', padx=10)
+        cond_l = tk.Label(text='Начальные условия', bg='#ececec').grid(row=2, column=0, columnspan=2, padx=10, pady=(10, 0))
+        u_l = tk.Label(text='x0:', bg='#ececec').grid(row=3, column=0, padx=(10, 0),pady=(10, 10), sticky='we')
+        u_e = tk.Entry(highlightbackground='#cbcbcb', textvariable=self.x0).grid(row=3, column=1,
+                                                                                          padx=(10, 0), sticky='we')
+        u_l = tk.Label(text="U0:", bg='#ececec').grid(row=4, column=0, padx=(10, 0), sticky='we')
+        u_e = tk.Entry(highlightbackground='#cbcbcb', textvariable=self.u0).grid(row=4, column=1,
+                                                                                          padx=(10, 0), sticky='we')
+        u_l = tk.Label(text='a:', bg='#ececec').grid(row=5, column=0, padx=(10, 0), sticky='we')
+        u_e = tk.Entry(highlightbackground='#cbcbcb', textvariable=self.a).grid(row=5, column=1,
+                                                                                          padx=(10, 0), sticky='we')
+        u_l = tk.Label(text='b:', bg='#ececec').grid(row=6, column=0, padx=(10, 0), sticky='we')
+        u_e = tk.Entry(highlightbackground='#cbcbcb', textvariable=self.b).grid(row=6, column=1,
                                                                                           padx=(10, 0), sticky='we')
 
-
+        u_l = tk.Label(text="U':", bg='#ececec').grid(row=7, column=0, padx=(10, 0), sticky='we')
+        u_e = tk.Entry(highlightbackground='#cbcbcb', textvariable=self.U).grid(row=7, column=1,
+                                                                                          padx=(10, 0), sticky='we')
+        
         # график
         self.canvas = tk.Canvas()
 
@@ -72,10 +88,6 @@ class Interface:
                                                                                                     sticky='we')
         border_l = tk.Label(text='Правая граница', bg='#ececec').grid(row=1, column=2, padx=10,
                                                                       pady=(10, 0), sticky='w')
-        rb1 = tk.Radiobutton(text='x', variable=self.rb_var, value=0, bg='#ececec').grid(row=1, column=3, pady=(10, 0),
-                                                                                         sticky='e')
-        rb2 = tk.Radiobutton(text='u', variable=self.rb_var, value=1, bg='#ececec').grid(row=1, column=4, pady=(10, 0),
-                                                                                         sticky='e')
         border_e = tk.Entry(highlightbackground='#cbcbcb', textvariable=self.border).grid(row=2, column=2,
                                                                                           columnspan=3,
                                                                                           padx=(10, 0), sticky='we')
@@ -96,12 +108,17 @@ class Interface:
         step_e = tk.Entry(highlightbackground='#cbcbcb', textvariable=self.step).grid(row=4, column=5, columnspan=2,
                                                                                       padx=(10, 0), sticky='we')
 
+        cb = tk.Checkbutton(bg='#ececec', variable=self.gr).grid(row=7, column=3, columnspan=2)
+        cb_l = tk.Label(text="Показать график U'(U)", bg='#ececec').grid(row=7, column=2, columnspan = 2, padx=10, sticky='w')
+
+
         # справка
         reference_l = tk.Label(text='Справка', bg='#ececec', font='Helvetica 10 bold').grid(row=0, column=7, pady=10,
                                                                                             padx=10, sticky='we')
         self.reference_t = tk.Text(height=10, width=70, highlightbackground='#cbcbcb')
         self.reference_t.grid(row=1, column=7, rowspan=6, padx=(10, 10),
                               sticky='we')
+        
 
         # таблица
     def add_columns(self, columns, **kwargs):
@@ -142,31 +159,39 @@ class Interface:
              self.add_columns(('E', 'Ui'))
           
          scroll_bar1 = Scrollbar(self.master, orient=VERTICAL, command=self.tables.yview)
-         scroll_bar1.grid(row=9, column=9, padx=10, sticky=tk.NSEW)
+         scroll_bar1.grid(row=9, column=9, rowspan=2, padx=10, sticky=tk.NSEW)
          self.tables.configure(yscroll=scroll_bar1.set)        
 
         # график
-    def plotOnPlane(self, X, Y):
+    def plotOnPlane(self, X, Y, U):
         f = plt.figure(num=2, figsize=(7, 5), dpi=80, facecolor='#ececec')
         fig = plt.subplot(1, 1, 1)
-        fig.set_title('График точного решения')
-        fig.set_xlabel('x')
-        fig.set_ylabel('U(x)')
-        fig.plot(X, Y, '-k')
+        fig.set_title('График')
+        if self.gr.get()==1 and self.task_c.get()=='Основная2':
+           fig.plot(Y, U, label = 'Численная траектория')
+           fig.set_xlabel('U')
+           fig.set_ylabel("U'(U)")
+        else:
+            fig.plot(X, Y, label = 'Численная траектория')
+            if self.task_c.get() == 'Тестовая':
+                fig.plot(X, U, label = 'Истинная траектория')
+            fig.set_xlabel('x')
+            fig.set_ylabel('U(x)')
+            fig.legend()
         return f
 
     def cleanPlot(self):
         plt.cla()
         f = plt.figure(num=2, figsize=(7, 5), dpi=80, facecolor='#ececec')
         fig = plt.subplot(1, 1, 1)
-        fig.set_title('График точного решения')
-        fig.set_xlabel('x')
-        fig.set_ylabel('U(x)')
+        fig.set_title('График')
+        #fig.set_xlabel('x')
+        #fig.set_ylabel('U(x)')
         self.canvas.draw()
 
     def create_form_graph(self, figure):
         self.canvas = FigureCanvasTkAgg(figure, self.master)
-        self.canvas.get_tk_widget().grid(row=9, column=0, columnspan=4, rowspan=1)
+        self.canvas.get_tk_widget().grid(row=10, column=1, columnspan=4, rowspan=1)
         self.canvas.draw()
 
     # справка
@@ -201,7 +226,7 @@ class Interface:
                 min_step_x = d[p['xi'] + z * p['k']]
             result_x = d[p['xi'] + z * p['k']]
             result_v = d[p['Vi'] + z * p['k']]
-        self.reference_t.insert(1.0, 'Метод РК3\n\n')
+        self.reference_t.insert(1.0, 'Метод РК4\n\n')
         self.reference_t.insert(3.0, 'Число шагов: ' + str(int(_i.value / p['k'])-1) + '\n')
         self.reference_t.insert(4.0, 'Число удвоений: ' + str(int(mul_counter)) + '\n')
         self.reference_t.insert(5.0, 'Число делений: ' + str(int(div_counter)) + '\n')
@@ -232,24 +257,17 @@ class Interface:
 
     #  выполняется при нажатии кнопки "Вычислить"
     def execute(self):
-        _i = (c_int)()
+        p=0
         self.clear_b.grid(
             row=6, column=6, padx=10, pady=(0, 10), sticky='we')
         # записываем начальные условия задачи
-        if self.task_c.get() == 'Тестовая':
-            _i.value = 0
-        elif self.task_c.get() == 'Основная1':
-            _i.value = 1
-        else:
-            _i.value = 2
         init_params = (c_double * 10)()
-
-        init_params[0] = 0
-        init_params[1] = self.x0.get()
+        init_params[0] = self.x0.get()
+        init_params[1] = self.u0.get()
         init_params[2] = self.step.get()
-        #init_params[3] = self.a1.get()
-        #init_params[4] = self.a3.get()
-        #init_params[5] = self.m.get()
+        init_params[3] = self.a.get() # u'0
+        init_params[4] = self.b.get() # a
+        init_params[5] = self.U.get() # b
         init_params[6] = self.error.get()
         init_params[7] = self.max_step.get()
         init_params[8] = self.border.get()  # точность выхода на границу
@@ -260,8 +278,10 @@ class Interface:
         # method_params[1] = self.error.get()  # контроль погрешности
         # записываем данные с кнопок (выбор границы / контроль лп)
         button_data = (c_int * 2)()
-        button_data[0] = self.rb_var.get()  # выбор границы 0 - x, 1 - u
+        button_data[0] = 0  # выбор границы 0 - x, 1 - u
         button_data[1] = self.cb_var.get()  # контроль ЛП True/False
+        #if self.task_c.get()=='Основная2':
+        #  init_params[3]=0
 
         # подрубаем dll
         dll = cdll.LoadLibrary("lab_1//x64//Release//lab_1.dll")
@@ -279,8 +299,16 @@ class Interface:
         d = POINTER(c_double)()
 
         # количество эл в массиве
+        _i = (c_int)()
+        if self.task_c.get() == 'Тестовая':
+            _i.value = 0
+        elif self.task_c.get() == 'Основная1':
+            _i.value = 1
+        else:
+            _i.value = 2
 
 
+        #_i.value = 1
         # работа
         dll.work_RK31R(byref(d), byref(init_params), byref(button_data), byref(_i))
 
@@ -297,18 +325,22 @@ class Interface:
 
         # for z in range(int(_i.value/p['k'])):
         #    print("i: ",z,"\tx: ",d[p['x']+z*p['k']],"\tv: ",d[p['v1']+z*p['k']],"\te: ",d[p['e']+z*p['k']],"\th: ",d[p['h']+z*p['k']],"\tu: ",d[p['u']+z*p['k']],"\tE: ",d[p['E']+z*p['k']],"\tC1: ",d[p['c1']+z*p['k']],"\tC2: ",d[p['c2']+z*p['k']],"\n")
-
         X = []
         for z in range(int(_i.value / p['k'])):
             X.append(d[p['xi'] + z * p['k']])
         Y = []
         for z in range(int(_i.value / p['k'])):
             Y.append(d[p['Vi'] + z * p['k']])
+        U = []
+        for z in range(int(_i.value / p['k'])):
+            U.append(d[p['Ui'] + z * p['k']])
 
-        self.figure = self.plotOnPlane(X, Y)
-        self.create_form_graph(self.figure)  # график
-
-        self.table(p, _i, d)  # таблица
+        # график
+        self.figure = self.plotOnPlane(X, Y, U)
+        self.create_form_graph(self.figure) 
+        
+        # таблица
+        self.table(p, _i, d)
         self.reference(p, _i, d)
 
         # удаляем память
