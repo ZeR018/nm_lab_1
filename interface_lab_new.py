@@ -48,9 +48,7 @@ class Interface:
         self.task_c.current(1)
         self.task_c.grid(row=1, column=0, columnspan=2, sticky='WE', padx=10)
         cond_l = tk.Label(text='Начальные условия', bg='#ececec').grid(row=2, column=0, columnspan=2, padx=10, pady=(10, 0))
-        u_l = tk.Label(text='x0:', bg='#ececec').grid(row=3, column=0, padx=(10, 0),pady=(10, 10), sticky='we')
-        u_e = tk.Entry(highlightbackground='#cbcbcb', textvariable=self.x0).grid(row=3, column=1,
-                                                                                          padx=(10, 0), sticky='we')
+        
         u_l = tk.Label(text="U0:", bg='#ececec').grid(row=4, column=0, padx=(10, 0), sticky='we')
         u_e = tk.Entry(highlightbackground='#cbcbcb', textvariable=self.u0).grid(row=4, column=1,
                                                                                           padx=(10, 0), sticky='we')

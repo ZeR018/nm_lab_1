@@ -22,16 +22,15 @@ double f_1(double x, double v)
 double st_RK4(double x, double v, double h, double* start_p, double* k)
 {
 	k[0] = f_1(x, v);
-	k[1] = f_1(x + h / 2, v + h / 2 * k[0]);
-	k[2] = f_1(x + h / 2, v + h / 2 * k[1]);
+	k[1] = f_1(x + h / 2, v + h * k[0] / 2);
+	k[2] = f_1(x + h / 2, v + h * k[1] / 2);
 	k[3] = f_1(x + h / 2, v + h * k[2]);
 
-	return v + h / 6 * (k[0] + 2 * k[1] + 2 * k[2] + k[3]);
+	return v + h * (k[0] + 2 * k[1] + 2 * k[2] + k[3]) / 6;
 }
 
-double st_true_sol_test(double x, double v, double v0)
+double st_true_sol_test(double x, double v0)
 {
-	//return exp((-3 * x + 2 * log(v0)) / 2);
 	return exp(-1.5 * x) * v0;
 }
 
@@ -60,15 +59,6 @@ int test_task(double* start_p, int* gran, const char* name_txt, double** py)
 	a.E = 0.0;
 	a.c1 = 0.0;
 	a.c2 = 0.0;
-	perem p;
-	p.x = start_p[__x0];
-	p.v = start_p[__u0];
-	p.s = 0.0;
-	p.h = start_p[__h0];
-	p.u = start_p[__u0];
-	p.E = 0.0;
-	p.c1 = 0.0;
-	p.c2 = 0.0;
 
 	// Массив К для метода и вектор результатов
 	double* k = new double[4];
@@ -166,7 +156,7 @@ int test_task(double* start_p, int* gran, const char* name_txt, double** py)
 			if (gran[__contr_e]) //c изминением шага или без
 			{
 				//условие, если рез функции зашел за наши параметры
-				if (s_temp > start_p[__e]&& a.h>0.001)
+				if (s_temp > start_p[__e]&& a.h>0.0000001)
 				{
 					i--;
 					a.h /= 2;
@@ -178,6 +168,13 @@ int test_task(double* start_p, int* gran, const char* name_txt, double** py)
 				{
 					a.h *= 2;
 					a.c2 += 1.0;
+
+					// Пересчитываем ОЛП с новым шагом
+
+					v_temp = st_RK4(a.x, a.v, a.h, start_p, k);
+					a.v2 = st_RK4(a.x, a.v, a.h / 2, start_p, k);
+					a.v2 = st_RK4(a.x + a.h / 2, a.v2, a.h / 2, start_p, k);
+					s_temp = fabs((a.v2 - v_temp) / (pow(2, P) - 1));
 				}
 			}
 		}
@@ -185,8 +182,8 @@ int test_task(double* start_p, int* gran, const char* name_txt, double** py)
 		a.x += a.h;
 
 		a.v = v_temp;
-		a.s = s_temp;
-		a.u = st_true_sol_test(a.x, a.v, start_p[__u0]);
+		a.s = s_temp * pow(2, P);
+		a.u = st_true_sol_test(a.x, start_p[__u0]);
 		a.E = fabs(a.u - a.v);
 		d_v.push_back(a.x);  // x
 		d_v.push_back(a.v);  // v
